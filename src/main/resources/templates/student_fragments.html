@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headtags">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/c1420ea119.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="mb-4" th:fragment="navigation (user, tabs)">
+  <nav class="navbar navbar-expand navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Justify</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav me-auto mb-2 mb-lg-0">
+          <a th:each="tab : ${tabs}"
+             th:classappend="${#httpServletRequest.getRequestURI().startsWith(tab.link) ? 'active' : ''}"
+             th:text="${tab.name}"
+             th:href="${tab.link}"
+             class="nav-item nav-link"></a>
+        </div>
+        <form class="d-flex">
+          <span class="navbar-text me-3" th:text="${user.displayName}"></span>
+          <button type="button" class="btn btn-primary me-3"
+                  data-bs-toggle="modal" data-bs-target="#request-modal">
+            New Request
+          </button>
+          <button class="btn btn-sm btn-outline-primary me-2" type="button" id="btnLogout">Log out</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<th:block th:fragment="end (events, justifications)">
+  <footer class="footer container d-flex align-items-end justify-content-center">
+    <p><small>&copy; Rotem Moses 2021. Justify is available under the MIT license.</small></p>
+  </footer>
+
+  <!-- Request modal -->
+  <div class="modal fade" id="request-modal" tabindex="-1" aria-labelledby="request-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="request-modal-label">Create request</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><small>For an entire day, select periods 0-15.</small></p>
+          <form>
+            <div class="mb-3">
+              <label for="date-start" class="col-form-label">Start date:</label>
+              <input type="date" class="form-control" id="date-start">
+            </div>
+            <div class="mb-3">
+              <label for="period-start" class="col-form-label">Start period:</label>
+              <select class="form-select" id="period-start">
+                <option selected value="0">0</option>
+                <option th:each="i : ${#numbers.sequence(1, 15)}" th:value="${i}" th:text="${i}"></option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="date-end" class="col-form-label">End date:</label>
+              <input type="date" class="form-control" id="date-end">
+            </div>
+            <div class="mb-3">
+              <label for="period-end" class="col-form-label">End period:</label>
+              <select class="form-select" id="period-end">
+                <option th:each="i : ${#numbers.sequence(0, 14)}" th:value="${i}" th:text="${i}"></option>
+                <option selected value="15">15</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="event" class="col-form-label">Event:</label>
+              <select class="form-select" id="event">
+                <option th:each="e : ${events}" th:value="${e.code}" th:text="${e.name}"></option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="approval" class="col-form-label">Requested approval:</label>
+              <select class="form-select" id="approval">
+                <option th:each="j : ${justifications}" th:value="${j.code}" th:text="${j.name}"></option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="note" class="col-form-label">Note:</label>
+              <input type="text" class="form-control" id="note" placeholder="Note">
+            </div>
+            <div class="mb-3">
+              <label for="files" class="col-form-label">Files:</label>
+              <input type="file" class="form-control" id="files" multiple>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="sendRequest">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/jquery-3.6.0.min.js"></script>
+  <script src="/js/students.js"></script>
+</th:block>
+
+</body>
+</html>

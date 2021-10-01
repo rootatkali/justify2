@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/c1420ea119.js" crossorigin="anonymous"></script>
+
+  <title>Teachers | Justify</title>
+</head>
+<body>
+<header class="mb-4">
+  <nav class="navbar navbar-expand navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Justify Teachers</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Dashboard</a>
+          </li>
+        </ul>
+        <form class="d-flex">
+          <span class="navbar-text me-3" th:text="${user.displayName}"></span>
+          <button class="btn btn-sm btn-outline-primary me-2" type="button" onclick="logout()">Log out</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container mb-4" th:if="${isTester}">
+  <div class="alert alert-info" role="alert">
+    <strong>Note:</strong> You are logged in using a tester account. You may not approve, reject, undo
+    or unlock requests.
+  </div>
+</div>
+
+<!-- Body -->
+<div class="container">
+  <div class="table-responsive">
+    <table class="table table-sm" id="table">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Submitter</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Event</th>
+        <th>Approval</th>
+        <th>Note</th>
+        <th>Files</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="rwf : ${requests}" th:with="r=${rwf.request}, files=${rwf.files}"
+          th:classappend="${r.getStatusClass()}">
+        <td th:text="${r.requestId}"></td>
+        <td th:text="${r.user.displayName}"></td>
+        <td th:text="${r.periodStart} + ' on ' + ${r.dateStart}"></td>
+        <td th:text="${r.periodEnd} + ' on ' + ${r.dateEnd}"></td>
+        <td th:text="${r.getEventName(events)}"></td>
+        <td th:text="${r.getApprovalName(justifications)}"></td>
+        <td th:text="${r.note}"></td>
+        <td>
+          <ul th:unless="${#lists.isEmpty(files)}">
+            <li th:each="file : ${files}">
+              <a th:href="${file.downloadUrl}" th:text="${file.name}"></a>
+            </li>
+          </ul>
+          <span th:if="${#lists.isEmpty(files)}">No files.</span>
+        </td>
+        <!--suppress CheckTagEmptyBody -->
+        <td th:switch="${r.status()}">
+          <th:block th:case="'UNANSWERED'">
+            <div th:unless="${isTester}" class="btn-group btn-group-sm" role="group">
+              <button type="button"
+                      class="btn btn-success"
+                      th:onclick="'approve(' + ${r.requestId} + ')'">
+                <i class="fal fa-check-square" style="color: white"></i>
+              </button>
+              <button type="button"
+                      class="btn btn-danger"
+                      th:onclick="'reject(' + ${r.requestId} + ')'">
+                <i class="fal fa-times-square" style="color: white"></i>
+              </button>
+            </div>
+            <span th:if="${isTester}" th:text="'UNANSWERED'"></span>
+          </th:block>
+          <th:block th:case="'APPROVED'">
+            APPROVED (<a href="#" th:unless="${isTester}" th:onclick="'undo(' + ${r.requestId} + ')'"><i class="fal fa-trash-undo" style="color: red"></i></a>)
+          </th:block>
+          <th:block th:case="'REJECTED'">
+            REJECTED (<a href="#" th:unless="${isTester}" th:onclick="'unlock(' + ${r.requestId} + ')'"><i class="fal fa-trash-restore" style="color: black"></i></a>)
+          </th:block>
+          <th:block th:case="*" th:text="${r.status}"></th:block>
+        </td>
+      </tr>
+      </tbody>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer class="footer container d-flex align-items-end justify-content-center">
+  <p><small>&copy; Rotem Moses 2021. Justify is available under the MIT license.</small></p>
+</footer>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/teachers.js" th:unless="${isTester}"></script> <!--/* If tester, do not provide request manipulation methods */-->
+<script type="text/javascript">
+  function logout() {
+    $.post(`/api/teachers/logout`, data => location.reload());
+  }
+</script>
+</body>
+</html>
