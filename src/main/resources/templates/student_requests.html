@@ -97,6 +97,9 @@
           <span th:case="*" th:text="${r.status}"></span>
         </td>
       </tr>
+      <tr th:if="${#lists.isEmpty(requests)}">
+        <td colspan="8">No active requests.</td>
+      </tr>
       </tbody>
     </table>
   </div>
