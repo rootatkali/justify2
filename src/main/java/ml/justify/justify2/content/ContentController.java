@@ -135,7 +135,8 @@ public class ContentController {
                                  Model model) {
     try {
       return tryGetStudentPage(userId, token, "student_events", model, Map.of(
-          "behaves", tryGetBehaves(userId, token, mashovCookies, csrfToken, uniquId)
+          "behaves", tryGetBehaves(userId, token, mashovCookies, csrfToken, uniquId),
+          "requests", studentApi.getMyUnansweredRequests(userId, token)
       ));
     } catch (ResponseStatusException e) {
       if (e.getStatus() == HttpStatus.UNAUTHORIZED) return getStudentLogin();

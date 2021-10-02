@@ -1,7 +1,14 @@
 package de.faceco.mashovapi.components;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Range;
 import com.google.gson.Gson;
+import ml.justify.justify2.model.Request;
+import ml.justify.justify2.model.RequestStatus;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * A data type noting a behave event, which can be justified or not.
@@ -130,6 +137,22 @@ public final class Behave {
         .add("subject", subject)
         .add("justifiedBy", justifiedBy)
         .toString();
+  }
+
+  private boolean isInRequest(Request r) {
+    LocalDate thisDate = LocalDateTime.parse(lessonDate).toLocalDate();
+    LocalDate rStart = r.getDateStart().toLocalDate();
+    LocalDate rEnd = r.getDateEnd().toLocalDate();
+
+    if (rStart.isAfter(thisDate) || rEnd.isBefore(thisDate)) return false;
+    return Range.closed(r.getPeriodStart(), r.getPeriodEnd()).contains(lesson);
+  }
+
+  public boolean isPending(List<Request> requests) {
+    for (Request r : requests) {
+      if (r.getStatus() == RequestStatus.UNANSWERED && isInRequest(r)) return true;
+    }
+    return false;
   }
   
   @Override
