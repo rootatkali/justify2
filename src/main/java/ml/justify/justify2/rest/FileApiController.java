@@ -87,6 +87,8 @@ public class FileApiController {
                                                @CookieValue(name = "token") String token,
                                                @PathVariable String id) {
     User u = validator.validateUser(userId, token);
+    validator.denyTester(u);
+
     DbFile file = fileService.getFile(id);
 
     if (u.getRole() == Role.STUDENT && !userId.equals(file.getUploader())) {
