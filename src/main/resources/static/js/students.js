@@ -8,11 +8,12 @@ modal.addEventListener('show.bs.modal', evt => {
   // if from behaves list - load data to modal
   if (btn.hasAttribute('data-bs-behave')) {
     const behave = JSON.parse(btn.getAttribute('data-bs-behave'));
+    let fullDay = btn.getAttribute('data-bs-full') === 'true';
 
     document.getElementById('date-start').value = behave.lessonDate.substr(0, 10);
-    document.getElementById('period-start').value = behave.lesson;
+    document.getElementById('period-start').value = fullDay ? 0 : behave.lesson;
     document.getElementById('date-end').value = behave.lessonDate.substr(0, 10);
-    document.getElementById('period-end').value = behave.lesson;
+    document.getElementById('period-end').value = fullDay ? 15 : behave.lesson;
     document.getElementById('event').value = behave.achvaCode;
   }
 

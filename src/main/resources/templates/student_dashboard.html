@@ -59,13 +59,21 @@
             <td th:text="${b.subject}"></td>
             <td th:text="${b.achvaName}"></td>
             <td>
-              <button type="button"
-                      th:unless="${b.isPending(requests)}"
-                      class="btn btn-link"
-                      data-bs-toggle="modal"
-                      data-bs-target="#request-modal"
-                      th:attr="data-bs-behave=${b.toJson()}">Submit
-              </button>
+              <div class="btn-group btn-group-sm" role="group" th:unless="${b.isPending(requests)}">
+                <button type="button"
+                        class="btn btn-secondary"
+                        disabled>Submit</button>
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#request-modal"
+                        th:attr="data-bs-behave=${b.toJson()},data-bs-full=${false}">Lesson</button>
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#request-modal"
+                        th:attr="data-bs-behave=${b.toJson()},data-bs-full=${true}">Day</button>
+              </div>
               <th:block th:if="${b.isPending(requests)}">Pending</th:block>
             </td>
           </tr>
