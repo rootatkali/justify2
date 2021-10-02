@@ -54,7 +54,7 @@ public class PermissionValidator {
   private User validateUserExists(String userId) {
     if (userId == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     return userRepository.findById(userId).orElseThrow(
-        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
+        () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)
     );
   }
 
