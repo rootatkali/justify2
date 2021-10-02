@@ -64,7 +64,7 @@
         <td th:text="${r.periodEnd} + ' on ' + ${r.dateEnd}"></td>
         <td th:text="${r.getEventName(events)}"></td>
         <td th:text="${r.getApprovalName(justifications)}"></td>
-        <td th:text="${r.note}"></td>
+        <td th:utext="${r.note}"></td>
         <td>
           <ul th:unless="${#lists.isEmpty(files)}">
             <li th:each="file : ${files}">
