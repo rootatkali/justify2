@@ -111,10 +111,10 @@ public class AdminApiController {
   }
 
   @PostMapping("/requests/{id}/reset")
-  public Request setUnanswered(@CookieValue(name = "admin", required = false) String token, @PathVariable Integer id) {
+  public Request setPending(@CookieValue(name = "admin", required = false) String token, @PathVariable Integer id) {
     validator.validateAdmin(token);
 
-    return setStatus(id, RequestStatus.UNANSWERED);
+    return setStatus(id, RequestStatus.PENDING);
   }
 
   @DeleteMapping("/requests/{id}")

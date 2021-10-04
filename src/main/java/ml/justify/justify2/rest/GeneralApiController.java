@@ -98,13 +98,13 @@ public class GeneralApiController {
     return requests;
   }
 
-  @GetMapping("/users/{id}/requests/unanswered")
-  public List<Request> getUserUnansweredRequests(@CookieValue(name = "user", required = false) String userId,
+  @GetMapping("/users/{id}/requests/pending")
+  public List<Request> getUserPendingRequests(@CookieValue(name = "user", required = false) String userId,
                                                  @CookieValue(name = "token", required = false) String token,
                                                  @PathVariable String id) {
     User u = validator.validateUser(userId, token);
     if (u.getRole() == Role.STUDENT && !userId.equals(id)) throw rse(HttpStatus.FORBIDDEN).get();
-    var requests = requestRepository.getAllByUserAndStatus(u, RequestStatus.UNANSWERED);
+    var requests = requestRepository.getAllByUserAndStatus(u, RequestStatus.PENDING);
     Collections.sort(requests);
     Collections.reverse(requests);
     return requests;
@@ -127,17 +127,17 @@ public class GeneralApiController {
     return ret;
   }
 
-  @GetMapping("/requests/unanswered")
-  public List<Request> getUnansweredRequests(@CookieValue(name = "user", required = false) String userId,
+  @GetMapping("/requests/pending")
+  public List<Request> getPendingRequests(@CookieValue(name = "user", required = false) String userId,
                                              @CookieValue(name = "token", required = false) String token) {
     validator.validateUser(userId, token, Role.TEACHER);
-    return requestRepository.getAllByStatus(RequestStatus.UNANSWERED);
+    return requestRepository.getAllByStatus(RequestStatus.PENDING);
   }
 
-  @GetMapping("/requests/unanswered/withFiles")
-  public List<RequestAndFiles> getUnansweredWithFiles(@CookieValue(name = "user", required = false) String userId,
+  @GetMapping("/requests/pending/withFiles")
+  public List<RequestAndFiles> getPendingWithFiles(@CookieValue(name = "user", required = false) String userId,
                                                       @CookieValue(name = "token", required = false) String token) {
-    var requests = getUnansweredRequests(userId, token);
+    var requests = getPendingRequests(userId, token);
     List<RequestAndFiles> ret = new ArrayList<>();
     requests.forEach(r -> ret.add(new RequestAndFiles(r, getRequestFiles(userId, token, r.getRequestId()))));
     Collections.reverse(ret);
@@ -161,7 +161,7 @@ public class GeneralApiController {
     r.setPeriodEnd(template.getPeriodEnd());
     r.setEventCode(template.getEventCode());
     r.setJustificationCode(template.getJustificationCode());
-    r.setStatus(RequestStatus.UNANSWERED);
+    r.setStatus(RequestStatus.PENDING);
     r.setNote(template.getNote());
 
     return requestRepository.save(r);
@@ -209,7 +209,7 @@ public class GeneralApiController {
 
     // validate request
     if (!u.getId().equals(r.getUser().getId())) throw rse(HttpStatus.FORBIDDEN).get();
-    if (r.getStatus() != RequestStatus.UNANSWERED) throw rse(HttpStatus.FORBIDDEN).get();
+    if (r.getStatus() != RequestStatus.PENDING) throw rse(HttpStatus.FORBIDDEN).get();
 
     r.setStatus(RequestStatus.CANCELLED);
     return requestRepository.save(r);
@@ -228,7 +228,7 @@ public class GeneralApiController {
     MashovResource<User> res = new MashovResource<>(u, mashovCookies, csrfToken, uniquId);
 
     Request r = getRequest(userId, authToken, id);
-    if (r.getStatus() != RequestStatus.UNANSWERED) throw rse(HttpStatus.FORBIDDEN).get();
+    if (r.getStatus() != RequestStatus.PENDING) throw rse(HttpStatus.FORBIDDEN).get();
 
     Approval a = new Approval(
         r.getEventCode(),
@@ -298,7 +298,7 @@ public class GeneralApiController {
     User u = validator.validateUser(userId, token, Role.TEACHER);
 
     Request r = getRequest(userId, token, id);
-    if (r.getStatus() != RequestStatus.UNANSWERED) throw rse(HttpStatus.FORBIDDEN).get();
+    if (r.getStatus() != RequestStatus.PENDING) throw rse(HttpStatus.FORBIDDEN).get();
 
     r.setStatus(RequestStatus.REJECTED);
     return requestRepository.save(r);
@@ -313,7 +313,7 @@ public class GeneralApiController {
     Request r = getRequest(userId, token, id);
     if (r.getStatus() != RequestStatus.REJECTED) throw rse(HttpStatus.FORBIDDEN).get();
 
-    r.setStatus(RequestStatus.UNANSWERED);
+    r.setStatus(RequestStatus.PENDING);
     return requestRepository.save(r);
   }
 
@@ -326,7 +326,7 @@ public class GeneralApiController {
     Request r = getRequest(userId, token, id);
 
     // validate request
-    if (r.getStatus() != RequestStatus.UNANSWERED) throw rse(HttpStatus.FORBIDDEN).get();
+    if (r.getStatus() != RequestStatus.PENDING) throw rse(HttpStatus.FORBIDDEN).get();
     if (!r.getUser().getId().equals(template.getUserId())) throw rse(HttpStatus.BAD_REQUEST).get();
 
     // update request elements

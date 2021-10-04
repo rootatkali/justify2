@@ -33,6 +33,15 @@ public class FileStorageService {
     file.setRequest(request);
     return fileRepository.save(file);
   }
+  
+  public DbFile renameFile(String id, String name) {
+    name = StringUtils.cleanPath(name);
+    if (name.contains("..")) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    
+    DbFile file = getFile(id);
+    file.setFileName(name);
+    return fileRepository.save(file);
+  }
 
   public DbFile storeFileWithRequest(MultipartFile file, Request request) throws IOException {
     DbFile df = storeFile(request.getUser().getId(), file);

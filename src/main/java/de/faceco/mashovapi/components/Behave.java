@@ -150,7 +150,7 @@ public final class Behave {
 
   public boolean isPending(List<Request> requests) {
     for (Request r : requests) {
-      if (r.getStatus() == RequestStatus.UNANSWERED && isInRequest(r)) return true;
+      if (r.getStatus() == RequestStatus.PENDING && isInRequest(r)) return true;
     }
     return false;
   }

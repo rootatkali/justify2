@@ -73,9 +73,8 @@
           </ul>
           <span th:if="${#lists.isEmpty(files)}">No files.</span>
         </td>
-        <!--suppress CheckTagEmptyBody -->
         <td th:switch="${r.status()}">
-          <th:block th:case="'UNANSWERED'">
+          <th:block th:case="'PENDING'">
             <div th:unless="${isTester}" class="btn-group btn-group-sm" role="group">
               <button type="button"
                       class="btn btn-success"
@@ -88,7 +87,7 @@
                 <i class="fal fa-times-square" style="color: white"></i>
               </button>
             </div>
-            <span th:if="${isTester}" th:text="'UNANSWERED'"></span>
+            <span th:if="${isTester}" th:text="'PENDING'"></span>
           </th:block>
           <th:block th:case="'APPROVED'">
             APPROVED (<a href="#" th:unless="${isTester}" th:onclick="'undo(' + ${r.requestId} + ')'"><i class="fal fa-trash-undo" style="color: red"></i></a>)

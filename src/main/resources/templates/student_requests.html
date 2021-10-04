@@ -80,7 +80,7 @@
           <th:block th:if="${#lists.isEmpty(files)}">No files.</th:block>
         </td>
         <td th:switch="${r.status()}">
-          <div th:case="'UNANSWERED'" class="btn-group btn-group-sm" role="group">
+          <div th:case="'PENDING'" class="btn-group btn-group-sm" role="group">
             <button type="button"
                     class="btn btn-info"
                     data-bs-toggle="modal"

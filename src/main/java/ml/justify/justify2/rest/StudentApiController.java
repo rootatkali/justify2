@@ -155,11 +155,11 @@ public class StudentApiController {
     return requests;
   }
 
-  @GetMapping("/myRequests/unanswered")
-  public List<Request> getMyUnansweredRequests(@CookieValue(name = "user", required = false) String userId,
-                                               @CookieValue(name = "token", required = false) String token) {
+  @GetMapping("/myRequests/pending")
+  public List<Request> getMyPendingRequests(@CookieValue(name = "user", required = false) String userId,
+                                            @CookieValue(name = "token", required = false) String token) {
     List<Request> requests = getMyRequests(userId, token);
-    return requests.stream().filter(r -> r.getStatus() == RequestStatus.UNANSWERED).collect(Collectors.toList());
+    return requests.stream().filter(r -> r.getStatus() == RequestStatus.PENDING).collect(Collectors.toList());
   }
 
   @GetMapping("/myRequests/withFiles")

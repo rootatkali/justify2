@@ -19,7 +19,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -29,7 +28,7 @@ public class FileApiController {
   private final PermissionValidator validator;
   private final FileRepository fileRepository;
   private final RequestRepository requestRepository;
-
+  
   @Autowired
   public FileApiController(FileStorageService fileService,
                            PermissionValidator validator,
@@ -40,18 +39,18 @@ public class FileApiController {
     this.fileRepository = fileRepository;
     this.requestRepository = requestRepository;
   }
-
+  
   private FileResponse storeAfterVerify(Request r, MultipartFile file) throws IOException {
     DbFile dbFile = fileService.storeFileWithRequest(file, r);
-
+    
     String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
         .path("/api/files/download/")
         .path(dbFile.getId())
         .toUriString();
-
+    
     return new FileResponse(dbFile.getId(), dbFile.getFileName(), downloadUrl, file.getContentType(), file.getSize());
   }
-
+  
   @PostMapping("/request/{id}")
   public FileResponse uploadFile(@CookieValue(name = "user") String userId,
                                  @CookieValue(name = "token") String token,
@@ -59,12 +58,12 @@ public class FileApiController {
                                  @RequestParam(name = "file") MultipartFile file) throws IOException {
     User u = validator.validateUser(userId, token, Role.STUDENT);
     Request r = requestRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    if (r.getStatus() != RequestStatus.UNANSWERED) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    if (r.getStatus() != RequestStatus.PENDING) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     if (!userId.equals(r.getUser().getId())) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-
+    
     return storeAfterVerify(r, file);
   }
-
+  
   @PostMapping("/request/{id}/multiple")
   public List<FileResponse> uploadFiles(@CookieValue(name = "user") String userId,
                                         @CookieValue(name = "token") String token,
@@ -73,45 +72,67 @@ public class FileApiController {
     User u = validator.validateUser(userId, token, Role.STUDENT);
     Request r = requestRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     if (!userId.equals(r.getUser().getId())) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-    if (r.getStatus() != RequestStatus.UNANSWERED) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-
+    if (r.getStatus() != RequestStatus.PENDING) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    
     List<FileResponse> responses = new ArrayList<>();
     for (MultipartFile mf : files) {
       responses.add(storeAfterVerify(r, mf));
     }
     return responses;
   }
-
+  
   @GetMapping("/download/{id}")
   public ResponseEntity<Resource> downloadFile(@CookieValue(name = "user") String userId,
                                                @CookieValue(name = "token") String token,
                                                @PathVariable String id) {
     User u = validator.validateUser(userId, token);
     validator.denyTester(u);
-
+    
     DbFile file = fileService.getFile(id);
-
+    
     if (u.getRole() == Role.STUDENT && !userId.equals(file.getUploader())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
-
+    
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(file.getFileType()))
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + '"')
         .body(new ByteArrayResource(file.getData()));
   }
-
+  
+  @PostMapping("/{id}/rename")
+  public FileResponse renameFile(@CookieValue(name = "user") String userId,
+                                 @CookieValue(name = "token") String token,
+                                 @PathVariable String id,
+                                 @RequestParam String name) {
+    User u = validator.validateUser(userId, token);
+    DbFile dbFile = fileService.getFile(id);
+    
+    if (u.getRole() == Role.STUDENT && !userId.equals(dbFile.getUploader())) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+    
+    dbFile = fileService.renameFile(id, name);
+    
+    String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+        .path("/api/files/download/")
+        .path(dbFile.getId())
+        .toUriString();
+    
+    return new FileResponse(dbFile.getId(), dbFile.getFileName(), downloadUrl, dbFile.getFileName(), dbFile.getData().length);
+  }
+  
   @DeleteMapping("/{id}")
   public void deleteFile(@CookieValue(name = "user") String userId,
                          @CookieValue(name = "token") String token,
                          @PathVariable String id) {
     User u = validator.validateUser(userId, token);
     DbFile file = fileService.getFile(id);
-
+    
     if (u.getRole() == Role.STUDENT && !userId.equals(file.getUploader())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
-
+    
     fileRepository.delete(file);
   }
 }

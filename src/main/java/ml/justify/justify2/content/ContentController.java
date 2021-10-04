@@ -96,7 +96,7 @@ public class ContentController {
                                           String csrfToken,
                                           String uniquId) {
     makeModel(model, user, Map.of(
-        "requests", studentApi.getMyUnansweredRequests(user.getId(), token),
+        "requests", studentApi.getMyPendingRequests(user.getId(), token),
         "behaves", tryGetBehaves(user.getId(), token, mashovCookies, csrfToken, uniquId),
         "tabs", studentTabs
     ));
@@ -136,7 +136,7 @@ public class ContentController {
     try {
       return tryGetStudentPage(userId, token, "student_events", model, Map.of(
           "behaves", tryGetBehaves(userId, token, mashovCookies, csrfToken, uniquId),
-          "requests", studentApi.getMyUnansweredRequests(userId, token)
+          "requests", studentApi.getMyPendingRequests(userId, token)
       ));
     } catch (ResponseStatusException e) {
       if (e.getStatus() == HttpStatus.UNAUTHORIZED) return getStudentLogin();
@@ -204,7 +204,7 @@ public class ContentController {
                                    @CookieValue(name = "token", required = false) String token,
                                    Model model) {
     return tryGetTeacherPage(userId, token, "teacher_dashboard", model, Map.of(
-        "requests", generalApi.getUnansweredWithFiles(userId, token),
+        "requests", generalApi.getPendingWithFiles(userId, token),
         "isTester", config.getTestAccountUsername().equals(userId)
     ));
   }
