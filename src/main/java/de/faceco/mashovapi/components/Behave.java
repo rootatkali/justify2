@@ -144,6 +144,7 @@ public final class Behave {
     LocalDate rStart = r.getDateStart().toLocalDate();
     LocalDate rEnd = r.getDateEnd().toLocalDate();
 
+    if (achvaCode != r.getEventCode()) return false;
     if (rStart.isAfter(thisDate) || rEnd.isBefore(thisDate)) return false;
     return Range.closed(r.getPeriodStart(), r.getPeriodEnd()).contains(lesson);
   }

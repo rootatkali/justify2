@@ -32,9 +32,16 @@
   </nav>
 </header>
 
-<div class="container mb-4" th:if="${isTester}">
+<div class="container mb-4">
+  <div class="alert alert-warning" role="alert" th:if="${isTester}">
+    <strong>Warning:</strong> You are logged in using a tester account. Features may be limited.
+  </div>
   <div class="alert alert-info" role="alert">
-    <strong>Note:</strong> You are logged in using a tester account. Features may be limited.
+    <strong>Note:</strong> Please <strong class="text-danger">reject</strong> requests you do not intend to approve, to
+    let the students resubmit them with more information.<br>
+    If this is your first time reading this note, please make sure to <strong class="text-danger">reject</strong> or
+    <strong class="text-success">approve</strong> any previous requests you may have left on pending (white background).
+    <br><em>Justify.ml</em> thanks you for your cooperation.
   </div>
 </div>
 
@@ -71,7 +78,7 @@
               <a th:href="${file.downloadUrl}" th:text="${file.name}"></a>
             </li>
           </ul>
-          <span th:if="${#lists.isEmpty(files)}">No files.</span>
+          <th:block th:if="${#lists.isEmpty(files)}">No files.</th:block>
         </td>
         <td th:switch="${r.status()}">
           <th:block th:case="'PENDING'">
