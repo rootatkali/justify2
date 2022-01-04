@@ -159,7 +159,7 @@ public class GeneralApiController {
     Request r = new Request();
     r.setUser(u);
     r.setDateStart(template.getDateStart());
-    r.setDateEnd(template.getDateEnd());
+    r.setDateEnd(template.getDateEnd() == null ? template.getDateStart() : template.getDateEnd());
     r.setPeriodStart(template.getPeriodStart());
     r.setPeriodEnd(template.getPeriodEnd());
     r.setEventCode(template.getEventCode());
