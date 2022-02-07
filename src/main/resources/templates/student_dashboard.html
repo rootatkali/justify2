@@ -74,7 +74,7 @@
                         data-bs-target="#request-modal"
                         th:attr="data-bs-behave=${b.toJson()},data-bs-full=${true}">Day</button>
               </div>
-              <th:block th:if="${b.isPending(requests)}">Pending</th:block>
+              <th:block th:if="${b.isPending(requests)}">Pending [<th:block th:text="${b.getRequest(requests).requestId}">#</th:block>]</th:block>
             </td>
           </tr>
           <tr th:if="${#lists.isEmpty(behaves)}">

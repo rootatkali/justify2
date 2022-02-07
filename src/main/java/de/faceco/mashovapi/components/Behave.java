@@ -150,10 +150,14 @@ public final class Behave {
   }
 
   public boolean isPending(List<Request> requests) {
+    return getRequest(requests) != null;
+  }
+  
+  public Request getRequest(List<Request> requests) {
     for (Request r : requests) {
-      if (r.getStatus() == RequestStatus.PENDING && isInRequest(r)) return true;
+      if (r.getStatus() == RequestStatus.PENDING && isInRequest(r)) return r;
     }
-    return false;
+    return null;
   }
   
   @Override
