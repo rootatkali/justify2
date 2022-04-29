@@ -1,5 +1,6 @@
 package ml.justify.justify2.rest;
 
+import lombok.extern.slf4j.Slf4j;
 import ml.justify.justify2.api.MashovResource;
 import ml.justify.justify2.api.TeacherMashovService;
 import ml.justify.justify2.model.*;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class GeneralApiController {

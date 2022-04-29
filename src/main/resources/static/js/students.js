@@ -24,7 +24,7 @@ modal.addEventListener('show.bs.modal', evt => {
       data: JSON.stringify({
         userId: me.id,
         dateStart: $("#date-start").val(),
-        dateEnd: ["", null, undefined].indexOf($("#date-end").val()) === -1 ? $("#date-start").val() : $("#date-end").val(),
+        dateEnd: $("#date-end").val(),
         periodStart: parseInt($("#period-start").val()),
         periodEnd: parseInt($("#period-end").val()),
         eventCode: parseInt($("#event").val()),
