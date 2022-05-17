@@ -20,7 +20,7 @@ function vote() {
   }
 
   if (new Set(values).size !== values.length) {
-    alert('Oi, I told you not to vote for two songs twice!');
+    alert('Oi, I told you not to vote for the same song twice!');
     return;
   }
 

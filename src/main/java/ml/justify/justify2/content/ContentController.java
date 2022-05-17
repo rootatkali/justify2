@@ -202,7 +202,7 @@ public class ContentController {
 
     return view;
   }
-
+  
   @GetMapping("/all")
   private String getAllRequests(@CookieValue(name = "user", required = false) String userId,
                                 @CookieValue(name = "token", required = false) String token,
@@ -210,6 +210,15 @@ public class ContentController {
     return tryGetTeacherPage(userId, token, "teacher_dashboard", model, Map.of(
         "requests", generalApi.getRequestsWithFiles(userId, token),
         "isTester", config.getTestAccountUsername().equals(userId)
+    ));
+  }
+  
+  @GetMapping("/tVote")
+  private String getTeacherVote(@CookieValue(name = "user", required = false) String userId,
+                                @CookieValue(name = "token", required = false) String token,
+                                Model model) {
+    return tryGetTeacherPage(userId, token, "vote", model, Map.of(
+        "songs", generalApi.getSongs()
     ));
   }
 
