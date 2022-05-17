@@ -14,6 +14,11 @@ function vote() {
 
   values = values.map(v => parseInt(v));
 
+  if (values.indexOf(-1) >= 0) {
+    alert('Please select all songs!');
+    return;
+  }
+
   if (new Set(values).size !== values.length) {
     alert('Oi, I told you not to vote for two songs twice!');
     return;
