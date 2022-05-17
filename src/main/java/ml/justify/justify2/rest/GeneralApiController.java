@@ -412,6 +412,20 @@ public class GeneralApiController {
     return songRepository.findAll();
   }
   
+  @GetMapping("/results")
+  public List<Result> getContestResults() {
+    List<Song> songs = new ArrayList<>();
+    getSongs().forEach(songs::add);
+    Collections.sort(songs);
+    Collections.reverse(songs);
+    return songs.stream().map(s -> {
+      Result r = new Result();
+      r.song = s.toString();
+      r.points = s.getVoteTotal();
+      return r;
+    }).collect(Collectors.toList());
+  }
+  
   @GetMapping("/events")
   public Iterable<Event> getEvents() {
     return eventRepository.findAll();
