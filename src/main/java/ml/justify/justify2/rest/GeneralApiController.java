@@ -367,6 +367,7 @@ public class GeneralApiController {
                      @CookieValue(name = "token", required = false) String token,
                      @RequestBody VoteList list) {
     User u = validator.validateUser(userId, token);
+    validator.denyTester(u);
     
     if (u.hasVoted()) return "Already voted.";
     
