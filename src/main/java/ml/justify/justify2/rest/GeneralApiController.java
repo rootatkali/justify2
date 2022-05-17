@@ -5,6 +5,7 @@ import ml.justify.justify2.api.MashovResource;
 import ml.justify.justify2.api.TeacherMashovService;
 import ml.justify.justify2.model.*;
 import ml.justify.justify2.repo.*;
+import ml.justify.justify2.util.Xss;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -29,6 +28,8 @@ public class GeneralApiController {
   private final RequestRepository requestRepository;
   private final SecretRepository secretRepository;
   private final FileRepository fileRepository;
+  private final SongRepository songRepository;
+  private final VoteRepository voteRepository;
   private final PermissionValidator validator;
   private final TeacherMashovService teacherMashovService;
   
@@ -47,6 +48,8 @@ public class GeneralApiController {
                               RequestRepository requestRepository,
                               SecretRepository secretRepository,
                               FileRepository fileRepository,
+                              SongRepository songRepository,
+                              VoteRepository voteRepository,
                               PermissionValidator validator,
                               TeacherMashovService teacherMashovService) {
     this.userRepository = userRepository;
@@ -55,6 +58,8 @@ public class GeneralApiController {
     this.requestRepository = requestRepository;
     this.secretRepository = secretRepository;
     this.fileRepository = fileRepository;
+    this.songRepository = songRepository;
+    this.voteRepository = voteRepository;
     this.validator = validator;
     this.teacherMashovService = teacherMashovService;
   }
@@ -353,6 +358,58 @@ public class GeneralApiController {
     if (template.getNote() != null) r.setNote(template.getNote());
     
     return requestRepository.save(r);
+  }
+  
+  private static final int[] POINTS = {12, 10, 8, 7, 6, 5, 4, 3, 2, 1};
+  
+  @PostMapping(path = "/vote", consumes = "application/json")
+  public String vote(@CookieValue(name = "user", required = false) String userId,
+                     @CookieValue(name = "token", required = false) String token,
+                     @RequestBody VoteList list) {
+    User u = validator.validateUser(userId, token);
+    
+    if (u.hasVoted()) return "Already voted.";
+    
+    int[] votes = list.getVotes();
+    if (votes.length != 10) throw rse(HttpStatus.BAD_REQUEST).get();
+    Set<Integer> set = new HashSet<>();
+    for (int ro : votes) set.add(ro);
+    if (set.size() != 10) throw rse(HttpStatus.BAD_REQUEST).get();
+  
+    for (int i = 0; i < 10; i++) {
+      int ro = votes[i];
+      int points = POINTS[i];
+      
+      Vote vote = new Vote();
+      vote.setVoter(u);
+      vote.setSong(songRepository.findById(ro).orElseThrow(rse(HttpStatus.NOT_FOUND)));
+      vote.setPoints(points);
+      
+      voteRepository.save(vote);
+    }
+    
+    return "Voted successfully";
+  }
+  
+  @PostMapping(path = "/songs", consumes = "text/plain")
+  public void addSongs(@CookieValue(name = "user", required = false) String userId,
+                       @CookieValue(name = "token", required = false) String token,
+                       @RequestBody String data) {
+    User u = validator.validateUser(userId, token, Role.TEACHER);
+    if (!validator.isTester(u)) return;
+    
+    String[] entries = data.split("\n");
+  
+    for (int i = 0; i < entries.length; i++) {
+      String entry = entries[i];
+      String[] edited = entry.split(" - ");
+      Song s = new Song(i + 1, edited[0], edited[1], null);
+      songRepository.save(s);
+    }
+  }
+  
+  public Iterable<Song> getSongs() {
+    return songRepository.findAll();
   }
   
   @GetMapping("/events")

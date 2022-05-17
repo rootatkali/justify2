@@ -157,7 +157,7 @@ public class ContentController {
       throw e;
     }
   }
-
+  
   @GetMapping("/files")
   public String getStudentFiles(@CookieValue(name = "user", required = false) String userId,
                                 @CookieValue(name = "token", required = false) String token,
@@ -165,6 +165,20 @@ public class ContentController {
     try {
       return tryGetStudentPage(userId, token, "student_files", model, Map.of(
           "files", generalApi.getUserFiles(userId, token, userId)
+      ));
+    } catch (ResponseStatusException e) {
+      if (e.getStatus() == HttpStatus.UNAUTHORIZED) return getStudentLogin();
+      throw e;
+    }
+  }
+  
+  @GetMapping("/vote")
+  public String getVote(@CookieValue(name = "user", required = false) String userId,
+                                @CookieValue(name = "token", required = false) String token,
+                                Model model) {
+    try {
+      return tryGetStudentPage(userId, token, "vote", model, Map.of(
+          "songs", generalApi.getSongs()
       ));
     } catch (ResponseStatusException e) {
       if (e.getStatus() == HttpStatus.UNAUTHORIZED) return getStudentLogin();

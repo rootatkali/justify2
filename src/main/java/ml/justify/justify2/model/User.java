@@ -21,6 +21,10 @@ public class User {
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
   @JsonIgnore
   private Set<Request> requests;
+  
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "voter")
+  @JsonIgnore
+  private List<Vote> votes;
 
   public User() {
   }
@@ -65,5 +69,9 @@ public class User {
 
   public List<Request> getRequests() {
     return new ArrayList<>(requests);
+  }
+  
+  public boolean hasVoted() {
+    return votes != null && !votes.isEmpty();
   }
 }

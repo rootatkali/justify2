@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/c1420ea119.js" crossorigin="anonymous"></script>
+  
+  <title>Vote | Justify</title>
+</head>
+<body>
+
+<header class="mb-4">
+  <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Justify</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav me-auto mb-2 mb-lg-0">
+          <a class="nav-item nav-link" href="/">Dashboard</a>
+          <a class="nav-item nav-link" href="/events">Events</a>
+          <a class="nav-item nav-link" href="/requests">Requests</a>
+          <a class="nav-item nav-link" href="/files">Files</a>
+          <a class="nav-item nav-link active" href="/vote">Vote</a>
+        </div>
+        <form class="d-flex">
+          <span class="navbar-text me-3" th:text="${user.displayName}"></span>
+          <button type="button" class="btn btn-primary me-3"
+                  data-bs-toggle="modal" data-bs-target="#request-modal">
+            New Request
+          </button>
+          <button class="btn btn-sm btn-outline-primary me-2" type="button" id="btnLogout">Log out</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="row mb-3">
+    <div class="col">
+      <h1>Yud Bet 4 Song Contest</h1>
+      <p class="lead">
+        Give twelve points to your favorite song, 10 points to the second place, and so on until one point.
+        <strong>Note:</strong> You may only vote once per song, otherwise your vote will not be submitted (don't try me).
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <form th:if="${!user.hasVoted()}">
+        <div class="mb-3">
+          <label for="pts12" class="col-form-label">12 points:</label>
+          <select class="form-select" id="pts12">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts10" class="col-form-label">10 points:</label>
+          <select class="form-select" id="pts10">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts8" class="col-form-label">8 points:</label>
+          <select class="form-select" id="pts8">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts7" class="col-form-label">7 points:</label>
+          <select class="form-select" id="pts7">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts6" class="col-form-label">6 points:</label>
+          <select class="form-select" id="pts6">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts5" class="col-form-label">5 points:</label>
+          <select class="form-select" id="pts5">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts4" class="col-form-label">4 points:</label>
+          <select class="form-select" id="pts4">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts3" class="col-form-label">3 points:</label>
+          <select class="form-select" id="pts3">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts2" class="col-form-label">2 points:</label>
+          <select class="form-select" id="pts2">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="pts1" class="col-form-label">1 point:</label>
+          <select class="form-select" id="pts1">
+            <option th:each="s : ${songs}" th:value="${s.ro}" th:text="${s}"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <button type="button" onclick="vote()" class="btn btn-primary">Vote!</button>
+        </div>
+      </form>
+      <p th:if="${user.hasVoted()}">Thank you for your vote. Please await the official results.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="footer container d-flex align-items-end justify-content-center">
+  <p><small>&copy; Rotem Moses 2021. Justify is available under the MIT license.</small></p>
+</footer>
+
+<!-- Request modal -->
+<div class="modal fade" id="request-modal" tabindex="-1" aria-labelledby="request-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="request-modal-label">Create request</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><small>For an entire day, select periods 0-15.</small></p>
+        <form>
+          <div class="mb-3">
+            <label for="date-start" class="col-form-label">Start date:</label>
+            <input type="date" class="form-control" id="date-start">
+          </div>
+          <div class="mb-3">
+            <label for="period-start" class="col-form-label">Start period:</label>
+            <select class="form-select" id="period-start">
+              <option selected value="0">0</option>
+              <option th:each="i : ${#numbers.sequence(1, 15)}" th:value="${i}" th:text="${i}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="date-end" class="col-form-label">End date:</label>
+            <input type="date" class="form-control" id="date-end">
+          </div>
+          <div class="mb-3">
+            <label for="period-end" class="col-form-label">End period:</label>
+            <select class="form-select" id="period-end">
+              <option th:each="i : ${#numbers.sequence(0, 14)}" th:value="${i}" th:text="${i}"></option>
+              <option selected value="15">15</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="event" class="col-form-label">Event:</label>
+            <select class="form-select" id="event">
+              <option th:each="e : ${events}" th:value="${e.code}" th:text="${e.name}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="approval" class="col-form-label">Requested approval:</label>
+            <select class="form-select" id="approval">
+              <option th:each="j : ${justifications}" th:value="${j.code}" th:text="${j.name}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="note" class="col-form-label">Note:</label>
+            <input type="text" class="form-control" id="note" placeholder="Note">
+          </div>
+          <div class="mb-3">
+            <label for="files" class="col-form-label">Files:</label>
+            <input type="file" class="form-control" id="files" multiple>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="sendRequest">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/students.js"></script>
+<script src="/js/students-vote.js"></script>
+
+</body>
+</html>
