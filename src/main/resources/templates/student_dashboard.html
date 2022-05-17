@@ -37,6 +37,14 @@
   </nav>
 </header>
 
+<div th:if="${!user.hasVoted()}" class="container mb-4">
+  <div class="alert alert-info" role="alert">
+    <h3>The Yud Bet 4 Song Contest is here!</h3>
+    <p>You can vote for your favorite songs <a href="/vote">here!</a> The winning song will be our official graduation
+    ceremony entry song.</p>
+  </div>
+</div>
+
 <!-- body -->
 <div class="container">
   <div class="row">
