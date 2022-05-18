@@ -372,7 +372,7 @@ public class GeneralApiController {
                      @CookieValue(name = "token", required = false) String token,
                      @RequestBody VoteList list) {
     User u = validator.validateUser(userId, token);
-    validator.denyTester(u);
+//    validator.denyTester(u);
     
     return userVote(u, list);
   }
@@ -394,8 +394,10 @@ public class GeneralApiController {
   public String userVote(User u, VoteList list) {
     if (hasDeadlinePassed()) return "Deadline has passed.";
   
-    if (u.hasVoted()) return "Already voted.";
+//    if (u.hasVoted()) return "Already voted.";
   
+    voteRepository.deleteAllByVoter(u);
+    
     int[] votes = list.getVotes();
     if (votes.length != 10) throw rse(HttpStatus.BAD_REQUEST).get();
     Set<Integer> set = new HashSet<>();
