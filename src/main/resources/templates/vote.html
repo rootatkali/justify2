@@ -51,7 +51,7 @@
   </div>
   <div class="row">
     <div class="col" th:if="${!deadline}">
-      <form th:if="${!user.hasVoted()}">
+      <form>
         <div class="mb-3">
           <label for="pts12" class="col-form-label">12 points:</label>
           <select class="form-select" id="pts12">
@@ -126,7 +126,6 @@
           <button type="button" onclick="vote()" class="btn btn-primary">Vote!</button>
         </div>
       </form>
-      <p th:if="${user.hasVoted()}">Thank you for your vote. Please await the official results.</p>
     </div>
     <div class="col" th:if="${deadline}">
       The deadline for voting has passed. Please await the official results.
