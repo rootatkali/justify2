@@ -360,6 +360,11 @@ public class GeneralApiController {
     return requestRepository.save(r);
   }
   
+  public boolean hasDeadlinePassed() {
+    LocalDateTime deadline = LocalDateTime.of(2022, 5, 18, 22, 0);
+    return LocalDateTime.now().isAfter(deadline);
+  }
+  
   private static final int[] POINTS = {12, 10, 8, 7, 6, 5, 4, 3, 2, 1};
   
   @PostMapping(path = "/vote", consumes = "application/json")
@@ -368,6 +373,8 @@ public class GeneralApiController {
                      @RequestBody VoteList list) {
     User u = validator.validateUser(userId, token);
     validator.denyTester(u);
+    
+    if (hasDeadlinePassed()) return "Deadline has passed.";
     
     if (u.hasVoted()) return "Already voted.";
     

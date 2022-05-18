@@ -178,7 +178,8 @@ public class ContentController {
                                 Model model) {
     try {
       return tryGetStudentPage(userId, token, "vote", model, Map.of(
-          "songs", generalApi.getSongs()
+          "songs", generalApi.getSongs(),
+          "deadline", generalApi.hasDeadlinePassed()
       ));
     } catch (ResponseStatusException e) {
       if (e.getStatus() == HttpStatus.UNAUTHORIZED) return getStudentLogin();
@@ -218,7 +219,8 @@ public class ContentController {
                                 @CookieValue(name = "token", required = false) String token,
                                 Model model) {
     return tryGetTeacherPage(userId, token, "vote", model, Map.of(
-        "songs", generalApi.getSongs()
+        "songs", generalApi.getSongs(),
+        "deadline", generalApi.hasDeadlinePassed()
     ));
   }
 
