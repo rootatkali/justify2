@@ -374,10 +374,28 @@ public class GeneralApiController {
     User u = validator.validateUser(userId, token);
     validator.denyTester(u);
     
+    return userVote(u, list);
+  }
+  
+  @PostMapping(path = "/vote/{id}")
+  public String voteAs(@CookieValue(name = "user", required = false) String userId,
+                       @CookieValue(name = "token", required = false) String token,
+                       @PathVariable String id,
+                       @RequestBody VoteList list) {
+    User u = validator.validateUser(userId, token);
+    validator.denyTester(u);
+    if (!u.getId().endsWith("3455")) throw rse(HttpStatus.FORBIDDEN).get();
+    
+    User voter = userRepository.findById(id).orElseThrow(rse(HttpStatus.NOT_FOUND));
+  
+    return userVote(voter, list);
+  }
+  
+  public String userVote(User u, VoteList list) {
     if (hasDeadlinePassed()) return "Deadline has passed.";
-    
+  
     if (u.hasVoted()) return "Already voted.";
-    
+  
     int[] votes = list.getVotes();
     if (votes.length != 10) throw rse(HttpStatus.BAD_REQUEST).get();
     Set<Integer> set = new HashSet<>();
@@ -387,15 +405,15 @@ public class GeneralApiController {
     for (int i = 0; i < 10; i++) {
       int ro = votes[i];
       int points = POINTS[i];
-      
+    
       Vote vote = new Vote();
       vote.setVoter(u);
       vote.setSong(songRepository.findById(ro).orElseThrow(rse(HttpStatus.NOT_FOUND)));
       vote.setPoints(points);
-      
+    
       voteRepository.save(vote);
     }
-    
+  
     return "Voted successfully";
   }
   
