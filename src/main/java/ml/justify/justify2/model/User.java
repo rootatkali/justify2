@@ -1,6 +1,7 @@
 package ml.justify.justify2.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -87,5 +88,10 @@ public class User {
   @Override
   public int hashCode() {
     return Objects.hash(id);
+  }
+  
+  @Override
+  public String toString() {
+    return displayName;
   }
 }
