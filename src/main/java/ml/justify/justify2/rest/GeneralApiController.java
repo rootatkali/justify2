@@ -361,7 +361,7 @@ public class GeneralApiController {
   }
   
   public boolean hasDeadlinePassed() {
-    LocalDateTime deadline = LocalDateTime.of(2022, 5, 18, 22, 0);
+    LocalDateTime deadline = LocalDateTime.of(2022, 5, 18, 23, 0);
     return LocalDateTime.now().isAfter(deadline);
   }
   
