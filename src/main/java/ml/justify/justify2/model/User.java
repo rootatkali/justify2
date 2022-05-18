@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -73,5 +74,18 @@ public class User {
   
   public boolean hasVoted() {
     return votes != null && !votes.isEmpty();
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    User user = (User) o;
+    return id.equals(user.id);
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 }

@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Song implements Comparable<Song> {
@@ -98,5 +99,18 @@ public class Song implements Comparable<Song> {
         .compare(getPointCount(1), o.getPointCount(1))
         .compare(o.ro, ro)
         .result();
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Song song = (Song) o;
+    return ro == song.ro && Objects.equals(artist, song.artist) && Objects.equals(title, song.title);
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(ro, artist, title);
   }
 }

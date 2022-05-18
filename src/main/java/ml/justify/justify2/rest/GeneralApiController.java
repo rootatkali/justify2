@@ -1,5 +1,8 @@
 package ml.justify.justify2.rest;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import ml.justify.justify2.api.MashovResource;
 import ml.justify.justify2.api.TeacherMashovService;
@@ -452,6 +455,23 @@ public class GeneralApiController {
       r.points = s.getVoteTotal();
       return r;
     }).collect(Collectors.toList());
+  }
+  
+  @GetMapping("/results/details")
+  public String getResultDetails(@CookieValue(name = "user", required = false) String userId,
+                                 @CookieValue(name = "token", required = false) String token) {
+    validator.validateUser(userId, token);
+  
+    Table<Song, User, Integer> details = HashBasedTable.create();
+    
+    List<Vote> votes = voteRepository.findAll();
+    for (Vote v : votes) {
+      details.put(v.getSong(), v.getVoter(), v.getPoints());
+    }
+    
+    
+    
+    return new Gson().toJson(details);
   }
   
   @GetMapping("/events")
